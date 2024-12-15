@@ -1,0 +1,77 @@
+{% extends 'base.html' %}
+
+{% block title %}Моє Резюме{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+  <header class="text-center mb-5">
+    <h1 class="display-4">Резюме</h1>
+    <p class="lead">Розробник програмного забезпечення з фокусом на веб-технології та інновації</p>
+  </header>
+
+  <main>
+    <section id="about" class="bg-light p-4 rounded shadow-sm mb-4">
+      <div class="d-flex align-items-center">
+        <div class="me-4">
+          <img src="{{ url_for('static', filename='images/profile.png') }}" class="rounded-circle border border-secondary" alt="Profile Image" width="120">
+        </div>
+        <div>
+          <h2 class="text-secondary">Про мене</h2>
+          <p>
+            Веб-розробник із великим досвідом роботи. Спеціалізуюсь на Python, Flask і створенні масштабованих, сучасних рішень для бізнесу.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <section id="education" class="p-4 rounded shadow-sm mb-4">
+      <h2 class="text-secondary border-bottom pb-2">Освіта</h2>
+      <ul class="list-unstyled">
+        <li class="mb-3">
+          <h5 class="mb-1">Київський національний університет</h5>
+          <small class="text-muted">Бакалавр комп'ютерних наук (2018-2022)</small>
+        </li>
+        <li>
+          <h5 class="mb-1">Чеський технічний університет</h5>
+          <small class="text-muted">Магістр програмної інженерії (2022-2024)</small>
+        </li>
+      </ul>
+    </section>
+
+    <section id="skills" class="bg-light p-4 rounded shadow-sm mb-4">
+      <h2 class="text-secondary border-bottom pb-2">Навички</h2>
+      <div class="row">
+        <div class="col-md-6">
+          <ul class="list-unstyled">
+            <li class="mb-2">Програмування: <strong>Python, JavaScript, C++</strong></li>
+            <li class="mb-2">Фреймворки: <strong>Flask, Django, React</strong></li>
+          </ul>
+        </div>
+        <div class="col-md-6">
+          <ul class="list-unstyled">
+            <li class="mb-2">Бази даних: <strong>MySQL, PostgreSQL, MongoDB</strong></li>
+            <li class="mb-2">Інструменти: <strong>Git, Docker, Jenkins</strong></li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <section id="experience" class="p-4 rounded shadow-sm">
+      <h2 class="text-secondary border-bottom pb-2">Досвід роботи/Проекти</h2>
+      <div class="mb-4">
+        <h5>Система управління замовленнями</h5>
+        <p class="mb-1">
+          Розробка системи для логістичної компанії з використанням <strong>Python, Flask, PostgreSQL</strong>.
+        </p>
+      </div>
+      <div>
+        <h5>Веб-додаток для автоматизації процесів</h5>
+        <p>
+          Створення додатка для бізнесу у сфері маркетингу, використовуючи <strong>Django, React, MySQL</strong>.
+        </p>
+      </div>
+    </section>
+  </main>
+
+</div>
+{% endblock %}
