@@ -6,6 +6,21 @@ body {
   line-height: 1.6;
 }
 
+:root {
+  --background-color: #ffffff;
+  --text-color: #000000;
+  --card-background: #f8f9fa;
+  --border-color: #ddd;
+}
+
+/* Темна тема */
+.dark-theme {
+  --background-color: #121212;
+  --text-color: #ffffff;
+  --card-background: #1e1e1e;
+  --border-color: #444;
+}
+
 /* Заголовки */
 h2 {
   color: #007bff;
@@ -131,3 +146,22 @@ footer a:hover {
     font-size: 0.95rem;
   }
 }
+
+.card {
+  background-color: var(--card-background);
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  padding: 16px;
+  margin-bottom: 20px;
+}
+
+body.light-scheme {
+  background-color: #ffffff;
+  color: #000000;
+}
+body.dark-scheme {
+  background-color: #333333;
+}
+
+.light-button { background-color: #4CAF50; }
+.dark-button { background-color: #555; }

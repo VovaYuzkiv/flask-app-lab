@@ -1,8 +1,10 @@
-from flask import request, redirect, url_for, render_template, abort
+from flask import  redirect, render_template
 from . import app
 
-@app.route('/')
+@app.route('/')  # URL '/' to be handled by main() route handler
 def main():
-    return render_template("base.html")
+    return redirect("resume")
 
-
+@app.route('/resume')
+def resume():
+    return render_template('resume.html', title="Резюме")

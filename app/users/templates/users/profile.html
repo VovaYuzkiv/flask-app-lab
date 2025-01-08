@@ -1,0 +1,97 @@
+{%extends 'base.html'%}
+{% block title%}Log in{% endblock %}
+{% block content%}
+    <div class="container mt-5">
+        <div class="row">
+            <div class="col-md-4">
+                <div class="card text-center">
+                    <div class="card-body">
+                        <h5 class="card-title">{{user}}</h5>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-8">
+                <div class="card p-4">
+
+                    <a class="nav-link" href="{{ url_for('.set_color_scheme', scheme='light') }}" class="light-button">Світла схема</a>
+                    <a class="nav-link" href="{{ url_for('.set_color_scheme', scheme='dark') }}" class="dark-button">Темна схема</a>
+                    <a class="btn w-1 btn-danger m-2" href="{{url_for('.logout')}}">logout</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="card mt-5">
+        <div class="card-header">
+            <h4>Додати кукі</h4>
+        </div>
+        <div class="card-body">
+            <form method="post", name="addCookie">
+                <div class="mb-3">
+                    <label for="projectName" class="form-label">Ключ кукі</label>
+                    <input type="text" class="form-control" name="cookieKey" placeholder="Ключ кукі">
+                </div>
+                <div class="mb-3">
+                    <label for="projectName" class="form-label">Значення кукі</label>
+                    <input type="text" class="form-control" name="cookieInfo" placeholder="Значення кукі">
+                </div>
+                <div class="mb-3">
+                    <label for="projectName" class="form-label">Термін дії в секунадах</label>
+                    <input type="text" class="form-control" name="cookieLifeTime" placeholder="Термін дії в секунадах">
+                </div>
+                <button type="submit" class="btn btn-success">Додати</button>
+            </form>
+        </div>
+    </div>
+
+    <div class="card mt-4">
+        <div class="card-header">
+            <h4>Видалити кукі за ключем</h4>
+        </div>
+        <div class="card-body">
+            <form method="post" name="deletCookie">
+                <div class="mb-3">
+                    <label for="cookieKey" class="form-label">Назва кукі</label>
+                    <input type="text" class="form-control" name="cookieKey" placeholder="Введіть назву кукі">
+                </div>
+                <button type="submit" class="btn btn-primary">Видалити</button>
+            </form>
+        </div>
+    </div>
+
+    <div class="card mt-5">
+        <div class="card-header">
+            <h4>Видалити всі кукі</h4>
+        </div>
+        <div class="card-body">
+            <form class="" method="post", name="deletAllCookie">
+                <button class="btn w-1 btn-danger m-2" type="submit" name="deletAllCookie" class="btn btn-success">Видалити всі кукі</button>
+            </form>
+        </div>
+    </div>
+
+
+    <div class="card mt-5">
+        <div class="card-header">
+            <h4>Наявні кукі</h4>
+        </div>
+        <div class="card-body">
+            <table class="table table-bordered table-striped">
+                <thead>
+                    <tr>
+                        <th>Ключ</th>
+                        <th>Значення</th>
+                    </tr>
+                </thead>
+                {% for key, value in request.cookies.items() %}
+                <tbody>
+                    <td>{{ key }}</td>
+                    <td ></tdstyle>>{{ value }}</td>
+                </tbody>
+                {% endfor %}
+            </table>
+        </div>
+    </div>
+</div>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+{% endblock %}
