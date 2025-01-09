@@ -3,29 +3,19 @@ import os
 from . import post_bp
 from flask import render_template, abort, session, flash, redirect, url_for
 from .forms import PostForm
-
-def load_posts():
-    if os.path.exists('posts.json'):
-        with open('posts.json', 'r', encoding='utf-8') as f:
-            return json.load(f)
-    return []
-
-def save_posts(posts):
-    temp_filename = "posts_temp.json"
-    with open(temp_filename, "w", encoding="utf-8") as f:
-        json.dump(posts, f, ensure_ascii=False, indent=4)
-    os.replace(temp_filename, "posts.json")
+from .models import Post
+from app import db
 
 @post_bp.route('/') 
 def get_posts():
-    posts = load_posts()
+    stmt = db.select(Post).order_by(Post.id)
+    posts = db.session.scalars(stmt).all()
     return render_template("posts.html", posts=posts)
 
 @post_bp.route('/<int:id>') 
 def detail_post(id):
-    posts = load_posts()
-    post = posts[id-1]
-    if id > 3:
+    post = db.get_or_404(Post, id)
+    if post is None:
         abort(404)
     return render_template("detail_post.html", post=post)
 
@@ -33,18 +23,31 @@ def detail_post(id):
 def creat_new_post():
     form = PostForm()
     if form.validate_on_submit():
-        posts = load_posts()
-        new_post = {
-            "id": len(posts)+1,
-            "title": form.title.data,
-            "content": form.content.data,
-            "date": form.publish_date.data,
-            "author": session.get("user","annonym")
-        }
-        posts.append(new_post)
-        save_posts(posts)
-        flash(f"Post {new_post['title']} added succsessfully!", "success")
+        
+        new_post = Post(
+            title = form.title.data,
+            content = form.content.data,
+            posted = form.publish_date.data,
+            category = form.category.data,
+            author = session.get("user","annonym")
+        )
+        db.session.add(new_post)
+        db.session.commit()
+        flash(f"Post {new_post.title} added succsessfully!", "success")
         return redirect ( url_for(".get_posts"))
     return render_template("add_post.html", form=form)
-
+@post_bp.route("/<int:id>/edit_post",methods=["GET","POST"])
+def edit_post(id):
+    post = db.get_or_404(Post, id)
+    form = PostForm(obj=post)
+    if form.validate_on_submit():
+        post.title = form.title.data
+        post.content = form.content.data
+        post.posted = form.publish_date.data
+        post.is_active = form.is_active.data
+        post.category = form.category.data
+        db.session.commit()
+        flash('Post updated succsessfully')
+        return redirect(url_for(".detail_post", id=id))
+    return render_template("add_post.html", form=form, post=post)
     

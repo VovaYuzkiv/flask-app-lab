@@ -1,13 +1,34 @@
 {% extends 'base.html' %}
 
-{% block title %} POSTS {% endblock %}
+{% block title %} POST №{{ post.id }} {% endblock %}
 
 {% block content %}
+<div class="container my-5">
+    <!-- Кнопка повернення до списку постів -->
+    <div class="mb-4">
+        <a class="btn btn-outline-primary" href="{{ url_for('posts.get_posts') }}">
+            <i class="bi bi-arrow-left"></i> Return to Posts
+        </a>
+    </div>
 
-    <h1>Post № {{post["id"]}} - {{post["title"]}} </h1>
+    <!-- Заголовок поста -->
+    <h1 class="display-5 text-center mb-4">Post №{{ post.id }} - {{ post.title }}</h1>
 
-    <p>{{ post.get('content') }}</p>
+    <!-- Картка з контентом поста -->
+    <div class="card shadow-sm">
+        <div class="card-body">
+            <p class="card-text fs-5">{{ post.content }}</p>
+        </div>
+        <div class="card-footer text-muted text-end">
+            <small>Posted on: {{ post.date }}</small>
+        </div>
+    </div>
 
-    <a href="{{ url_for('posts.get_posts') }}">Return posts</a>
-
+    <!-- Кнопка редагування поста -->
+    <div class="mt-4 text-end">
+        <a class="btn btn-primary" href="{{ url_for('posts.edit_post', id=post.id) }}">
+            <i class="bi bi-pencil-square"></i> Edit Post
+        </a>
+    </div>
+</div>
 {% endblock %}

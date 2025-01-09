@@ -2,32 +2,36 @@
 
 {% block title %} POSTS {% endblock %}
 
-{% block css%}
-    <link rel="stylesheet" href="{{url_for('.static',filename='css/style')}}">
-{%endblock%}
+{% block css %}
+    <link rel="stylesheet" href="{{ url_for('.static', filename='css/style') }}">
+{% endblock %}
 
 {% block content %}
-
 <h1>Articles</h1>
     
-    <div>
-        <a class="btn btn-primary mb-5" href="{{url_for('posts.creat_new_post')}}">add new post</a>
-    </div>
+<div>
+    <a class="btn btn-primary mb-5" href="{{ url_for('posts.creat_new_post') }}">Add New Post</a>
+</div>
 
-
-<ul>
-    {% for post in posts%}
-        <div class="card h-100">
-            <img src="{{url_for('.static',filename='images/default.png')}}" class="card-img-top" alt="{{post.title}}">
-            <div class="card-body">
-                <a href="{{ url_for('posts.detail_post', id=post.get('id')) }}"><h5 class="card-title">{{post.title}}</h5></a>
-                    <p class="card-text">{{post.content}}</p>
-                    <p class="card-text"><small class="text-muted">Date: {{post.date}}</small></p>
-                    <p class="card-text"><small class="text-muted">Author: {{post.author}}</small></p>
-                </a>
+<div class="row row-cols-1 row-cols-md-3 g-4">
+    {% for post in posts %}
+        <div class="col">
+            <div class="card h-100">
+                <img src="{{ url_for('.static', filename='images/default.png') }}" class="card-img-top" alt="{{ post.title }}">
+                <div class="card-body">
+                    <a href="{{ url_for('posts.detail_post', id=post.id) }}">
+                        <h5 class="card-title">{{ post.title }}</h5>
+                    </a>
+                    <p class="card-text">{{ post.content }}</p>
+                    <p class="card-text">
+                        <small class="text-muted">Date: {{ post.date }}</small>
+                    </p>
+                    <p class="card-text">
+                        <small class="text-muted">Author: {{ post.author }}</small>
+                    </p>
+                </div>
             </div>
         </div>
     {% endfor %}
-</ul>
-
+</div>
 {% endblock %}
