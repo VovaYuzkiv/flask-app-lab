@@ -1,13 +1,13 @@
 from . import user_bp
 from flask import request, redirect, url_for, render_template, flash, session, make_response
 from .models import User
+from .forms import LoginForm, RegisterForm
+from app import db, bcrypt, loginManager
+from flask_login import login_user, current_user, logout_user, login_required
 
 @user_bp.route('/')
 def main():
     return render_template("base.html")
-
-
-#users
 
 @user_bp.route("/hi/<string:name>")   #/hi/ivan?age=45
 def greetings(name):
@@ -30,23 +30,37 @@ def home():
 
     return render_template("home.html", agent=agent)
 
+@user_bp.route("/register", methods=["GET","POST"])
+def register():
+    form = RegisterForm()
+    if form.validate_on_submit():
+        hashedPassword = bcrypt.generate_password_hash(form.password.data).decode('utf-8')
+        newUser = User(username=form.username.data, email=form.email.data, password=hashedPassword)
+        db.session.add(newUser)
+        db.session.commit()
+        flash('Registration successful!', 'success')
+        return redirect(url_for('.login'))
+    flash('Invalid:', 'danger')
+    return render_template("register.html",form=form)
+
 @user_bp.route("/login", methods=["GET","POST"])
 def login():
-    if request.method == "POST":
-
-        username = request.form.get("username")
-        password = request.form.get("password")
-
-        correctPass = "qwerty"
-        correctUser = "user1"
-        if correctPass == password and correctUser == username:
-
-            session["user"] = username 
+    if current_user.is_authenticated:
+        return redirect(url_for(".account"))
+    form = LoginForm()
+    if form.validate_on_submit():
+        user = User.query.filter_by(email=form.email.data).first()
+        if user and bcrypt.check_password_hash(user.password,form.password.data):
+            login_user(user)
+            flash("Login successful","success")
             return redirect(url_for(".profile"))
-        
         flash("Invalid: Не вірний логін або пароль.","danger")
-        print ("Invalid: Не вірний логін або пароль.")
-    return render_template("login.html")
+    return render_template("login.html",form=form)
+
+@user_bp.route("/account")
+@login_required
+def account():
+    return render_template("account.html",user=current_user)
 
 @user_bp.route("/profile", methods=["GET","POST"])
 def profile():
@@ -82,6 +96,7 @@ def profile():
     
 @user_bp.route("logout")
 def logout():
+    logout_user()
     session.pop("user",None)
     return redirect(url_for(".login"))
 
@@ -94,3 +109,13 @@ def set_color_scheme(scheme):
     response.set_cookie("color_schem", scheme)
     flash(f'Кольорова схема змінена на {scheme}.', "success")
     return response
+
+@user_bp.route('/all_users')
+def get_accounts():
+    stmt= db.select(User).order_by(User.id)
+    accounts = db.session.scalars(stmt).all()
+    return render_template("user/all_register_account.html", accounts=accounts)
+
+@loginManager.user_loader
+def loadUser(user_id):
+    return User.query.get(int(user_id))
