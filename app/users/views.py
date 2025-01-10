@@ -1,5 +1,6 @@
 from . import user_bp
 from flask import request, redirect, url_for, render_template, flash, session, make_response
+from .models import User
 
 @user_bp.route('/')
 def main():

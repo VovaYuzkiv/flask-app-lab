@@ -11,6 +11,8 @@
     {{ render_field(form.is_active,"form-check-input") }}
     {{ render_field(form.publish_date,"form-control") }}
     {{ render_field(form.category,"form-control") }}
+    {{ render_field(form.author_id,"form-control") }}
+    {{ form.tags(class="form-select", multiple=True) }}
     {{ form.submit(class="btn btn-primary") }}
     
 </form>

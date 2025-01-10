@@ -19,8 +19,21 @@
         <div class="card-body">
             <p class="card-text fs-5">{{ post.content }}</p>
         </div>
-        <div class="card-footer text-muted text-end">
-            <small>Posted on: {{ post.date }}</small>
+        <div class="card-footer text-muted">
+            <div class="d-flex justify-content-between">
+                <small>Posted on: {{ post.date }}</small>
+                <!-- Вивід тегів -->
+                <div>
+                    <span class="fw-bold">Tags:</span>
+                    {% if post.tags %}
+                        {% for tag in post.tags %}
+                            <span class="badge bg-secondary">{{ tag.name }}</span>
+                        {% endfor %}
+                    {% else %}
+                        <span>No tags</span>
+                    {% endif %}
+                </div>
+            </div>
         </div>
     </div>
 
