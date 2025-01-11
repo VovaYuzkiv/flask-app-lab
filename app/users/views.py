@@ -1,8 +1,12 @@
 from . import user_bp
-from flask import request, redirect, url_for, render_template, flash, session, make_response
+from flask import request, redirect, url_for, render_template, flash, session, make_response, current_app
 from .models import User
-from .forms import LoginForm, RegisterForm
-from app import db, bcrypt, loginManager
+from .forms import LoginForm, RegisterForm, UpdateForm, ChangePasswordForm
+from app import db, bcrypt
+from werkzeug.utils import secure_filename
+from datetime import datetime as dt
+import os
+import uuid
 from flask_login import login_user, current_user, logout_user, login_required
 
 @user_bp.route('/')
@@ -62,6 +66,52 @@ def login():
 def account():
     return render_template("account.html",user=current_user)
 
+@user_bp.route("/update_profile", methods=["GET","POST"])
+@login_required
+def update_profile():
+    form = UpdateForm(
+        email = current_user.email,
+        username = current_user.username,
+        aboutMe = current_user.aboutMe
+    )
+    if form.validate_on_submit():
+        user = current_user
+        user.username = form.username.data
+        user.email = form.email.data
+        user.aboutMe = form.aboutMe.data
+        if form.img_file.data:
+            picture_file = save_picture(form.img_file.data)
+            print(picture_file)
+            user.imgFile = picture_file
+        db.session.commit()
+        return redirect(url_for(".account"))
+    return render_template("update_profile.html",form=form, user=current_user)
+
+def save_picture(form_picture):
+    ext = os.path.splitext(secure_filename(form_picture.filename))[1]
+    unique_filename = f"{uuid.uuid4().hex}{ext}"
+    picture_path = os.path.join(current_app.config['UPLOAD_FOLDER'], unique_filename)
+    allowed_extensions = {'.jpg', '.jpeg', '.png', '.gif'}
+    if ext.lower() not in allowed_extensions:
+        raise ValueError("Недозволений формат файлу. Завантажте зображення у форматі JPG, JPEG, PNG або GIF.")
+    os.makedirs(os.path.dirname(picture_path), exist_ok=True)
+    form_picture.save(picture_path)
+    return unique_filename
+
+@user_bp.route("/chang_pasword", methods=["GET","POST"])
+@login_required
+def change_password():
+    form = ChangePasswordForm()
+    if form.validate_on_submit():
+        if not current_user and not bcrypt.check_password_hash(current_user.password,form.old_password.data):
+            flash('Incorrect old password', 'danger')
+            return redirect(url_for('change_password'))
+        current_user.password = bcrypt.generate_password_hash(form.new_password.data)
+        db.session.commit()
+        flash('Your password has been updated!', 'success')
+        return redirect(url_for('.profile'))
+    return render_template('change_password.html', form=form)
+
 @user_bp.route("/profile", methods=["GET","POST"])
 def profile():
     if "user" in session:
@@ -96,6 +146,8 @@ def profile():
     
 @user_bp.route("logout")
 def logout():
+    current_user.last_seen = dt.now()
+    db.session.commit()
     logout_user()
     session.pop("user",None)
     return redirect(url_for(".login"))
@@ -115,7 +167,3 @@ def get_accounts():
     stmt= db.select(User).order_by(User.id)
     accounts = db.session.scalars(stmt).all()
     return render_template("user/all_register_account.html", accounts=accounts)
-
-@loginManager.user_loader
-def loadUser(user_id):
-    return User.query.get(int(user_id))

@@ -1,6 +1,7 @@
 from flask_wtf import FlaskForm
-from wtforms import StringField, PasswordField, SubmitField
+from wtforms import StringField, PasswordField, SubmitField, TextAreaField, FileField
 from wtforms.validators import DataRequired, Length, Email, EqualTo, Regexp, ValidationError
+from flask_wtf.file import FileAllowed
 from .models import User
 
 class RegisterForm(FlaskForm):
@@ -35,3 +36,22 @@ class LoginForm(FlaskForm):
     password = PasswordField('Password', 
                              validators=[DataRequired()])
     submit = SubmitField('Log in')
+
+class UpdateForm(FlaskForm):
+    email = StringField('Email', 
+                        validators=[DataRequired(), Email()])
+    username = StringField('Username',
+                            validators=[DataRequired(), 
+                                       Length(min=3, max=20),
+                                       Regexp('^[a-zA-Z0-9_]+$', message="Username must contain only letters, numbers, or underscores.")]
+                            )
+    aboutMe = TextAreaField('About me', render_kw={"rows":5, "cols":5})
+    img_file = FileField('Update Profile Picture', 
+                         validators=[FileAllowed(['jpg', 'png'], 
+                                                 'Images only!')])
+    submit = SubmitField('Update')
+class ChangePasswordForm(FlaskForm):
+    old_password = PasswordField('Old Password', validators=[DataRequired()])
+    new_password = PasswordField('New Password', validators=[DataRequired(), Length(min=6)])
+    confirm_password = PasswordField('Confirm New Password', validators=[DataRequired(), EqualTo('new_password', message="Passwords must match.")])
+    submit = SubmitField('Update')
